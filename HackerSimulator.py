@@ -1,156 +1,220 @@
-import time
+import tkinter as tk
+from tkinter import ttk, messagebox
 import random
-import os
+import time
+from threading import Thread
 
-# Utility Functions
-def print_slow(text, delay=0.03):
-    """Prints text character by character for dramatic effect."""
-    for char in text:
-        print(char, end='', flush=True)
-        time.sleep(delay)
-    print()
-
-def clear_screen():
-    """Clears the console for better UI."""
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def loading_animation(text="Loading", dots=3, cycles=3):
-    """Simulates a loading animation."""
-    for _ in range(cycles):
-        for dot_count in range(dots + 1):
-            print(f"\r{text}{'.' * dot_count}{' ' * (dots - dot_count)}", end="", flush=True)
-            time.sleep(0.3)
-    print()
-
-# ASCII Art for Design
-def hacker_art():
-    """Displays cool hacker-themed ASCII art."""
-    art = """
-   ██╗  ██╗ █████╗  ██████╗██╗  ██╗███████╗██████╗ 
-   ██║  ██║██╔══██╗██╔════╝██║  ██║██╔════╝██╔══██╗
-   ███████║███████║██║     ███████║█████╗  ██████╔╝
-   ██╔══██║██╔══██║██║     ██╔══██║██╔══╝  ██╔═══╝ 
-   ██║  ██║██║  ██║╚██████╗██║  ██║███████╗██║     
-   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝     
-    """
-    print_slow(art, 0.002)
-
-# Login System
-def login_screen():
-    """Simulates a login screen with username and password."""
-    clear_screen()
-    hacker_art()
-    print("\nWelcome to the Hacker OS\n")
-    username = input("Enter your email: ")
-    password = input("Enter your password: ")
-    loading_animation("Authenticating", cycles=5)
-    print_slow(f"Access Granted. Welcome, {username.split('@')[0]}!")
-    time.sleep(1)
-
-# Main Menu
-def main_menu():
-    """Displays the main menu with options."""
-    clear_screen()
-    hacker_art()
-    print("=== Hacker Simulator OS ===")
-    print(f"💰 Wallet: ${wallet:.2f} | 🕵️ Police Meter: {police_meter}% | ✅ Tasks Completed: {tasks_completed}")
-    print("\nMain Menu:")
-    print("1. Crack a password")
-    print("2. Launch a DDoS attack")
-    print("3. Start a phishing campaign")
-    print("4. Mine Bitcoin")
-    print("5. Exit")
-    return input("Enter your choice: ")
-
-# Game Elements
-wallet = 0  # Bitcoin wallet balance
-police_meter = 0  # Risk of being caught
+# Global Variables
+wallet = 0
+police_meter = 0
 tasks_completed = 0
+upgrades = {"VPN Boost": False, "Mining Rig": False, "Firewall Bypass": False, "Dark Web Access": False}
+current_task = None
+total_earnings = 0
+
+# Helper Functions
+def update_stats():
+    """Updates the stats displayed in the GUI."""
+    wallet_label.config(text=f"Wallet: ${wallet:.2f}")
+    police_label.config(text=f"Police Meter: {police_meter}%")
+    tasks_label.config(text=f"Tasks Completed: {tasks_completed}")
+    total_label.config(text=f"Total Earnings: ${total_earnings:.2f}")
+
+def show_message(title, message):
+    """Displays a popup message."""
+    messagebox.showinfo(title, message)
+
+def simulate_progress(task_name, reward_range, success_chance, police_increase):
+    """Simulates task progress with a progress bar."""
+    def task_logic():
+        global wallet, police_meter, tasks_completed, total_earnings
+        task_window = tk.Toplevel(root)
+        task_window.title(f"{task_name} - Hacker OS")
+        task_window.geometry("500x150")
+        task_window.resizable(False, False)
+        task_window.config(bg="black")
+        
+        tk.Label(task_window, text=f"Executing {task_name}...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        progress = ttk.Progressbar(task_window, length=400, mode='determinate')
+        progress.pack(pady=10)
+
+        for i in range(100):
+            time.sleep(0.03)
+            progress["value"] += 1
+            task_window.update_idletasks()
+
+        task_window.destroy()
+        
+        # Outcome
+        if random.random() < success_chance:
+            reward = random.randint(*reward_range)
+            wallet += reward
+            total_earnings += reward
+            tasks_completed += 1
+            show_message(task_name, f"Success! Earned ${reward}.")
+        else:
+            police_meter += police_increase
+            show_message(task_name, f"Failed! Police meter increased by {police_increase}.")
+        update_stats()
+    
+    Thread(target=task_logic).start()
 
 def bitcoin_miner():
-    """Simulates mining Bitcoin."""
-    global wallet
-    print_slow("\n🔨 Starting Bitcoin miner...")
-    loading_animation("Mining Bitcoins", cycles=5)
-    mined_bitcoins = random.uniform(0.001, 0.01)  # Random small amount
-    wallet += mined_bitcoins
-    print_slow(f"✅ Successfully mined {mined_bitcoins:.6f} BTC!")
-    time.sleep(2)
+    if upgrades["Mining Rig"]:
+        simulate_progress("Bitcoin Mining", (50, 200), 0.9, 5)
+    else:
+        simulate_progress("Bitcoin Mining", (10, 50), 0.8, 10)
 
 def password_cracking():
-    """Simulates a password cracking task."""
-    global wallet, police_meter, tasks_completed
-    print_slow("\n🔓 Connecting to target server...")
-    loading_animation("Brute-forcing password", cycles=4)
-    if random.random() > 0.3:  # 70% success rate
-        reward = random.randint(100, 1000)
-        wallet += reward
-        tasks_completed += 1
-        print_slow(f"✅ Password cracked! Earned ${reward}.")
-    else:
-        police_meter += random.randint(5, 15)
-        print_slow("❌ Failed! The police meter increased.")
-    time.sleep(2)
+    simulate_progress("Password Cracking", (100, 500), 0.7, 15)
 
 def ddos_attack():
-    """Simulates a DDoS attack task."""
-    global wallet, police_meter, tasks_completed
-    print_slow("\n🌐 Launching DDoS attack...")
-    loading_animation("Overloading target", cycles=4)
-    if random.random() > 0.5:  # 50% success rate
-        reward = random.randint(500, 2000)
-        wallet += reward
-        tasks_completed += 1
-        print_slow(f"✅ Attack successful! Earned ${reward}.")
-    else:
-        police_meter += random.randint(10, 20)
-        print_slow("❌ Attack traced back! Police meter increased.")
-    time.sleep(2)
+    simulate_progress("DDoS Attack", (300, 1000), 0.6, 20)
 
 def phishing_emails():
-    """Simulates a phishing email campaign."""
-    global wallet, police_meter, tasks_completed
-    print_slow("\n📧 Setting up phishing campaign...")
-    loading_animation("Sending fake emails", cycles=5)
-    if random.random() > 0.4:  # 60% success rate
-        reward = random.randint(300, 1500)
-        wallet += reward
-        tasks_completed += 1
-        print_slow(f"✅ Phishing successful! Earned ${reward}.")
-    else:
-        police_meter += random.randint(5, 25)
-        print_slow("❌ Campaign detected! Police meter increased.")
-    time.sleep(2)
+    simulate_progress("Phishing Campaign", (200, 800), 0.75, 10)
 
+def black_market():
+    """Opens the black market window."""
+    global wallet
+    def purchase_item(item, cost, key):
+        global wallet
+        if wallet >= cost:
+            wallet -= cost
+            upgrades[key] = True
+            update_stats()
+            show_message("Black Market", f"{item} purchased successfully!")
+        else:
+            show_message("Black Market", "Not enough money to purchase this item.")
+
+    # Black Market Window
+    bm_window = tk.Toplevel(root)
+    bm_window.title("Black Market - Hacker OS")
+    bm_window.geometry("500x400")
+    bm_window.resizable(False, False)
+    bm_window.config(bg="black")
+
+    tk.Label(bm_window, text="Welcome to the Black Market!", font=("Courier", 18), fg="white", bg="black").pack(pady=10)
+    items = [
+        ("VPN Boost", 500, "VPN Boost"),
+        ("Mining Rig", 1000, "Mining Rig"),
+        ("Firewall Bypass", 800, "Firewall Bypass"),
+        ("Dark Web Access", 1500, "Dark Web Access"),
+    ]
+
+    for item, cost, key in items:
+        tk.Button(bm_window, text=f"Buy {item} (${cost})", 
+                  command=lambda i=item, c=cost, k=key: purchase_item(i, c, k), width=30, bg="green", fg="white").pack(pady=5)
+
+def escape_police():
+    """Reduces the police meter with a chance of failure."""
+    global police_meter
+    def task_logic():
+        task_window = tk.Toplevel(root)
+        task_window.title("Escape Police - Hacker OS")
+        task_window.geometry("500x150")
+        task_window.resizable(False, False)
+        task_window.config(bg="black")
+        
+        tk.Label(task_window, text="Escaping police...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        progress = ttk.Progressbar(task_window, length=400, mode='determinate')
+        progress.pack(pady=10)
+
+        for i in range(100):
+            time.sleep(0.02)
+            progress["value"] += 1
+            task_window.update_idletasks()
+
+        task_window.destroy()
+        
+        # Outcome
+        if random.random() < 0.7:  # 70% chance of success
+            reduction = random.randint(10, 30)
+            police_meter = max(0, police_meter - reduction)
+            show_message("Escape Police", f"Police Meter reduced by {reduction}!")
+        else:
+            show_message("Escape Police", "Failed to escape!")
+        update_stats()
+    
+    Thread(target=task_logic).start()
+
+# Police Meter Check
 def check_police_meter():
-    """Checks if the police meter is too high."""
+    """Ends the game if the police meter reaches 100%."""
+    global police_meter
     if police_meter >= 100:
-        print_slow("\n🚨 The police have caught you! Game Over.")
-        exit()
-    else:
-        print_slow(f"🕵️ Police Meter: {police_meter}%")
+        show_message("Game Over", "The police have caught you! Game Over.")
+        root.quit()
+
+# Search Files
+def search_files():
+    """Simulate a file search operation."""
+    def search_logic():
+        task_window = tk.Toplevel(root)
+        task_window.title("Search Files - Hacker OS")
+        task_window.geometry("500x150")
+        task_window.resizable(False, False)
+        task_window.config(bg="black")
+        
+        tk.Label(task_window, text="Searching for Files...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        progress = ttk.Progressbar(task_window, length=400, mode='determinate')
+        progress.pack(pady=10)
+
+        for i in range(100):
+            time.sleep(0.05)
+            progress["value"] += 1
+            task_window.update_idletasks()
+
+        task_window.destroy()
+        
+        # Outcome
+        result = random.choice(["Found confidential documents", "No files found", "Discovered hidden folder"])
+        show_message("File Search", result)
+        update_stats()
+
+    Thread(target=search_logic).start()
+
+# Main GUI
+root = tk.Tk()
+root.title("Hacker OS - Main Terminal")
+root.geometry("800x600")
+root.resizable(False, False)
+root.config(bg="black")
+
+# Header
+tk.Label(root, text="Hacker OS", font=("Courier", 24, "bold"), fg="lime", bg="black").pack(pady=10)
+
+# Stats Frame
+stats_frame = tk.Frame(root, bg="black")
+stats_frame.pack(pady=10)
+wallet_label = tk.Label(stats_frame, text=f"Wallet: ${wallet:.2f}", font=("Courier", 14), fg="white", bg="black")
+wallet_label.grid(row=0, column=0, padx=10)
+police_label = tk.Label(stats_frame, text=f"Police Meter: {police_meter}%", font=("Courier", 14), fg="white", bg="black")
+police_label.grid(row=0, column=1, padx=10)
+tasks_label = tk.Label(stats_frame, text=f"Tasks Completed: {tasks_completed}", font=("Courier", 14), fg="white", bg="black")
+tasks_label.grid(row=0, column=2, padx=10)
+total_label = tk.Label(stats_frame, text=f"Total Earnings: ${total_earnings:.2f}", font=("Courier", 14), fg="white", bg="black")
+total_label.grid(row=0, column=3, padx=10)
+
+# Command Center (Buttons)
+command_center_frame = tk.Frame(root, bg="black")
+command_center_frame.pack(pady=20)
+tk.Button(command_center_frame, text="Crack Password", command=password_cracking, width=20, bg="blue", fg="white").grid(row=0, column=0, padx=10, pady=5)
+tk.Button(command_center_frame, text="Launch DDoS Attack", command=ddos_attack, width=20, bg="red", fg="white").grid(row=0, column=1, padx=10, pady=5)
+tk.Button(command_center_frame, text="Phishing Campaign", command=phishing_emails, width=20, bg="yellow", fg="black").grid(row=1, column=0, padx=10, pady=5)
+tk.Button(command_center_frame, text="Mine Bitcoin", command=bitcoin_miner, width=20, bg="purple", fg="white").grid(row=1, column=1, padx=10, pady=5)
+tk.Button(command_center_frame, text="Search Files", command=search_files, width=20, bg="green", fg="white").grid(row=2, column=0, padx=10, pady=5)
+tk.Button(command_center_frame, text="Escape Police", command=escape_police, width=20, bg="gray", fg="white").grid(row=2, column=1, padx=10, pady=5)
+
+# Black Market Button
+tk.Button(root, text="Enter Black Market", command=black_market, width=20, bg="orange", fg="white").pack(pady=10)
 
 # Game Loop
-def main():
-    login_screen()
-    while True:
-        choice = main_menu()
-        if choice == "1":
-            password_cracking()
-        elif choice == "2":
-            ddos_attack()
-        elif choice == "3":
-            phishing_emails()
-        elif choice == "4":
-            bitcoin_miner()
-        elif choice == "5":
-            print_slow("Exiting the Hacker OS... Goodbye!")
-            break
-        else:
-            print_slow("Invalid choice. Please try again.")
-        check_police_meter()
-        time.sleep(1)
+def game_loop():
+    check_police_meter()
+    root.after(1000, game_loop)
 
-# Start the Game
-if __name__ == "__main__":
-    main()
+# Start the game loop
+game_loop()
+
+root.mainloop()
