@@ -14,18 +14,18 @@ total_earnings = 0
 
 # Helper Functions
 def update_stats():
-    """Updates the stats displayed in the GUI."""
+    """Updates the stats displayed in the GUI. Created by MapLe."""
     wallet_label.config(text=f"Wallet: ${wallet:.2f}")
     police_label.config(text=f"Police Meter: {police_meter}%")
     tasks_label.config(text=f"Tasks Completed: {tasks_completed}")
     total_label.config(text=f"Total Earnings: ${total_earnings:.2f}")
 
 def show_message(title, message):
-    """Displays a popup message."""
+    """Displays a popup message. Created by MapLe."""
     messagebox.showinfo(title, message)
 
 def simulate_progress(task_name, reward_range, success_chance, police_increase):
-    """Simulates task progress with a progress bar."""
+    """Simulates task progress with a progress bar. Created by MapLe."""
     def task_logic():
         global wallet, police_meter, tasks_completed, total_earnings
         task_window = tk.Toplevel(root)
@@ -34,7 +34,7 @@ def simulate_progress(task_name, reward_range, success_chance, police_increase):
         task_window.resizable(False, False)
         task_window.config(bg="black")
         
-        tk.Label(task_window, text=f"Executing {task_name}...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        tk.Label(task_window, text=f"Executing {task_name}... - MapLe", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
         progress = ttk.Progressbar(task_window, length=400, mode='determinate')
         progress.pack(pady=10)
 
@@ -60,22 +60,26 @@ def simulate_progress(task_name, reward_range, success_chance, police_increase):
     Thread(target=task_logic).start()
 
 def bitcoin_miner():
+    """Simulate Bitcoin mining task. Created by MapLe."""
     if upgrades["Mining Rig"]:
         simulate_progress("Bitcoin Mining", (50, 200), 0.9, 5)
     else:
         simulate_progress("Bitcoin Mining", (10, 50), 0.8, 10)
 
 def password_cracking():
+    """Simulate Password Cracking task. Created by MapLe."""
     simulate_progress("Password Cracking", (100, 500), 0.7, 15)
 
 def ddos_attack():
+    """Simulate DDoS Attack task. Created by MapLe."""
     simulate_progress("DDoS Attack", (300, 1000), 0.6, 20)
 
 def phishing_emails():
+    """Simulate Phishing Campaign task. Created by MapLe."""
     simulate_progress("Phishing Campaign", (200, 800), 0.75, 10)
 
 def black_market():
-    """Opens the black market window."""
+    """Opens the black market window. Created by MapLe."""
     global wallet
     def purchase_item(item, cost, key):
         global wallet
@@ -83,9 +87,9 @@ def black_market():
             wallet -= cost
             upgrades[key] = True
             update_stats()
-            show_message("Black Market", f"{item} purchased successfully!")
+            show_message("Black Market", f"{item} purchased successfully! - MapLe")
         else:
-            show_message("Black Market", "Not enough money to purchase this item.")
+            show_message("Black Market", "Not enough money to purchase this item. - MapLe")
 
     # Black Market Window
     bm_window = tk.Toplevel(root)
@@ -94,7 +98,7 @@ def black_market():
     bm_window.resizable(False, False)
     bm_window.config(bg="black")
 
-    tk.Label(bm_window, text="Welcome to the Black Market!", font=("Courier", 18), fg="white", bg="black").pack(pady=10)
+    tk.Label(bm_window, text="Welcome to the Black Market! - MapLe", font=("Courier", 18), fg="white", bg="black").pack(pady=10)
     items = [
         ("VPN Boost", 500, "VPN Boost"),
         ("Mining Rig", 1000, "Mining Rig"),
@@ -107,7 +111,7 @@ def black_market():
                   command=lambda i=item, c=cost, k=key: purchase_item(i, c, k), width=30, bg="green", fg="white").pack(pady=5)
 
 def escape_police():
-    """Reduces the police meter with a chance of failure."""
+    """Reduces the police meter with a chance of failure. Created by MapLe."""
     global police_meter
     def task_logic():
         task_window = tk.Toplevel(root)
@@ -116,7 +120,7 @@ def escape_police():
         task_window.resizable(False, False)
         task_window.config(bg="black")
         
-        tk.Label(task_window, text="Escaping police...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        tk.Label(task_window, text="Escaping police... - MapLe", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
         progress = ttk.Progressbar(task_window, length=400, mode='determinate')
         progress.pack(pady=10)
 
@@ -131,24 +135,24 @@ def escape_police():
         if random.random() < 0.7:  # 70% chance of success
             reduction = random.randint(10, 30)
             police_meter = max(0, police_meter - reduction)
-            show_message("Escape Police", f"Police Meter reduced by {reduction}!")
+            show_message("Escape Police", f"Police Meter reduced by {reduction}! - MapLe")
         else:
-            show_message("Escape Police", "Failed to escape!")
+            show_message("Escape Police", "Failed to escape! - MapLe")
         update_stats()
     
     Thread(target=task_logic).start()
 
 # Police Meter Check
 def check_police_meter():
-    """Ends the game if the police meter reaches 100%."""
+    """Ends the game if the police meter reaches 100%. Created by MapLe."""
     global police_meter
     if police_meter >= 100:
-        show_message("Game Over", "The police have caught you! Game Over.")
+        show_message("Game Over", "The police have caught you! Game Over. - MapLe")
         root.quit()
 
 # Search Files
 def search_files():
-    """Simulate a file search operation."""
+    """Simulate a file search operation. Created by MapLe."""
     def search_logic():
         task_window = tk.Toplevel(root)
         task_window.title("Search Files - Hacker OS")
@@ -156,7 +160,7 @@ def search_files():
         task_window.resizable(False, False)
         task_window.config(bg="black")
         
-        tk.Label(task_window, text="Searching for Files...", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
+        tk.Label(task_window, text="Searching for Files... - MapLe", font=("Courier", 16), fg="white", bg="black").pack(pady=10)
         progress = ttk.Progressbar(task_window, length=400, mode='determinate')
         progress.pack(pady=10)
 
@@ -169,7 +173,7 @@ def search_files():
         
         # Outcome
         result = random.choice(["Found confidential documents", "No files found", "Discovered hidden folder"])
-        show_message("File Search", result)
+        show_message("File Search", result + " - MapLe")
         update_stats()
 
     Thread(target=search_logic).start()
@@ -182,7 +186,7 @@ root.resizable(False, False)
 root.config(bg="black")
 
 # Header
-tk.Label(root, text="Hacker OS", font=("Courier", 24, "bold"), fg="lime", bg="black").pack(pady=10)
+tk.Label(root, text="Hacker OS - MapLe", font=("Courier", 24, "bold"), fg="lime", bg="black").pack(pady=10)
 
 # Stats Frame
 stats_frame = tk.Frame(root, bg="black")
@@ -218,3 +222,5 @@ def game_loop():
 game_loop()
 
 root.mainloop()
+
+# Coded by MapLe
